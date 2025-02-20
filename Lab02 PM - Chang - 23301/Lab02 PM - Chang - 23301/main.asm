@@ -12,7 +12,6 @@
 ;************************************************************************
 .include "M328PDEF.inc"
 .org 0x0000
-
 	RJMP START
 
 START:
@@ -88,7 +87,7 @@ START:
 	LD R16, Z				; Revisamos el siguiente registro del puntero
 	OUT PORTD, R16			; Iniciar el display en 0
 
-	LDI R20, 0x00			; Revisamos el siguiente registro del puntero
+	LDI R20, 0x00			; Reiniciamos el contador del display
 
 MAIN_LOOP:
     RCALL   T100ms          ; Se necesitan 10 desbordamientos (~100 ms)
@@ -106,6 +105,7 @@ MAIN_LOOP:
     RCALL   CHECK_INC		; Verifica los botones
     RJMP    MAIN_LOOP
 
+; Revisamos los pushbuttons para el incremento o decremento del display
 CHECK_INC:
 	SBIC PINB, 0			; Si PB0 (incrementar) está en alto, salta
     RJMP CHECK_DEC			; Si no, verifica el botón de decremento
@@ -142,6 +142,7 @@ CHECK_DEC:
 	RCALL WAIT_FOR_RELEASE	; Revisar que no hayan pushbuttons presionados
 	RJMP MAIN_LOOP
 
+; Revisamos que los contadores sean iguales
 CHECK_COUNT:
     CP      R17, R20        ; Compara R17 (contador segundos) con R20 (contador botones)
     BRNE    RETURN_CHECK    ; Si no son iguales, retorna
@@ -165,8 +166,9 @@ LED_OFF:
 RETURN_CHECK:
     RET
 
+; Configurar los desbordamientos
 T100ms:
-	LDI		R18, 15
+	LDI		R18, 10
 TIMER: 
 	SBIS	TIFR0, TOV0			; Esperar desbordamiento
 	RJMP	TIMER
