@@ -91,9 +91,14 @@ START:
 
 MAIN_LOOP:
     RCALL   T100ms          ; Se necesitan 10 desbordamientos (~100 ms)
+	INC		R23
+	CPI		R23, 10
+	BRNE	CHECK_LEDS
+	CLR		R23
     INC     R17
     ANDI    R17, 0x0F       ; Mantiene el contador en 4 bits (0-15)
-    
+ 
+ CHECK_LEDS:
     IN      R16, PORTC      ; Lee el estado actual de PORTC
     ANDI    R16, 0x10       ; Encender solo PC4  bit 4 (LED)
     MOV     R22, R17        ; Copia R17 a R22
